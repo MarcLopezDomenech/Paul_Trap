@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from surf_integral import *
 
-epsilon0 = 8.854187812813e-12 #vaccum electric permittivity
+epsilon0 = 1 #vaccum electric permittivity jeje
 epsilonr = 1 #relative permittivity
 epsilon = epsilon0 * epsilonr #permittivity
 
@@ -35,7 +35,7 @@ def initial_plane_mesh(x, y1, y2, z1, z2, Ny, Nz):
     
     ntriang = [len(topol)]
 
-    res = obj(np.array(vertex), np.array(topol, dtype=int), np.array(bari), np.array(ntriang))
+    res = obj(np.array(vertex), np.array(topol, dtype=int), np.array(bari), np.array(ntriang, dtype=int))
     return res
 
 def plot_mesh(obj):
@@ -75,56 +75,13 @@ def concatenate_meshes(obj1, obj2):
     bari[:len(obj1.bari), :] = obj1.bari
     bari[len(obj1.bari):, :] = obj2.bari
 
-    ntriang = np.zeros(2)
+    ntriang = np.zeros(2, dtype=int)
     ntriang[0] = obj1.ntriang[0]
     ntriang[1] = obj2.ntriang[0]
 
     res = obj(vertex, topol, bari, ntriang)
 
     return res
-
-
-if __name__ == '__main__':
-    x = -0.1
-    y1 = -1
-    y2 = 1
-    z1 = -1
-    z2 = 1
-    Ny = 3
-    Nz = 3
-    obj1 = initial_plane_mesh(x, y1, y2, z1, z2, Ny, Nz)
-    '''
-    print('vertex =', obj1.vertex)
-    print('topol=', obj1.topol)
-    print('bari=', obj1.bari)
-    print('ntriang=', obj1.ntriang)
-    '''
-    plot_mesh(obj1)
-
-    x = 0.1
-    y1 = -1
-    y2 = 1
-    z1 = -1
-    z2 = 1
-    Ny = 4
-    Nz = 4
-    obj2 = initial_plane_mesh(x, y1, y2, z1, z2, Ny, Nz)
-    #'''
-    print('vertex =', obj2.vertex)
-    print('topol=', obj2.topol)
-    print('bari=', obj2.bari)
-    print('ntriang=', obj2.ntriang)
-    #'''
-    plot_mesh(obj2)
-
-    obj = concatenate_meshes(obj1, obj2)
-
-    print('vertex =', obj.vertex)
-    print('topol=', obj.topol)
-    print('bari=', obj.bari)
-    print('ntriang=', obj.ntriang)
-
-    plot_mesh(obj)
 
 def linear_system(obj: object, V: np.array) -> np.array:
     '''
@@ -134,17 +91,15 @@ def linear_system(obj: object, V: np.array) -> np.array:
     Returns an array of size N with the surface charge density in each mesh point
     '''
     M=len(obj.bari)
-    N = len(obj.vertex)
-    Z = np.zeros((N, M))
+    Z = np.zeros((M, M))
     for i in range(M):
         vert=obj.topol[i]
-        v1=obj.vertex(vert[0])
-        v2=obj.vertex(vert[1])
-        v3=obj.vertex(vert[2])
-        Z[:,i]=vec_func(obj.bari,v1, v2, v3)
-    Z=Z/4*pi*epsilon
-    b = V
-    q = np.linalg.solve(Z, b)
+        v1=obj.vertex[vert[0]]
+        v2=obj.vertex[vert[1]]
+        v3=obj.vertex[vert[2]]
+        guvec_func(obj.bari,v1, v2, v3, 1, Z[:, i])
+    Z=Z/epsilon #omit 4*pi because it is already implemented in the guvec_func function
+    q = np.linalg.solve(Z, V)
     return q
 
 def pot_surf(obj: object,V0: np.array) -> np.array:
@@ -158,11 +113,16 @@ def pot_surf(obj: object,V0: np.array) -> np.array:
     M=sum(surf)
     V=np.zeros(M)
     V[:surf[0]]=V0[0]
-    for i in range(1,len(surf)):
-        V[surf[i-1]:surf(i)]=V0[i]
+    a = 0
+    b = surf[0]
+    for i in range(1, len(surf)):
+        a += surf[i-1]
+        b += surf[i]
+        V[a:b]=V0[i]
     return V
 
 def potential(obj: object, q: np.array, pts: np.array) -> np.array:
-    V=mat_func(pts,obj.vertex,obj.topol,q)
-    V=V/4*pi*epsilon
+    V=np.zeros(len(pts))
+    gumat_func(pts,obj.vertex,obj.topol,q, V)
+    V=V/epsilon #omit 4*pi because it is already implemented in the gumat_func function
     return V
