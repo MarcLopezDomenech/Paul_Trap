@@ -21,7 +21,8 @@ def linear_system(mesh: object, V: np.array) -> np.array:
         v1=mesh.vertex(vert(0))
         v2=mesh.vertex(vert(1))
         v3=mesh.vertex(vert(2))
-        Z[:,i]=vec_func(mesh.vertex,v1, v2, v3)
+        Z[:,i]=vec_func(mesh.bari,v1, v2, v3)
+    Z=Z/4*pi*epsilon
     b = V
     q = np.linalg.solve(Z, b)
     return q
