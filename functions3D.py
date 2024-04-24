@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from surf_integral import *
 
 epsilon0 = 8.854187812813e-12 #vaccum electric permittivity
-epsilonr = 4.5 #relative permittivity
+epsilonr = 1 #relative permittivity
 epsilon = epsilon0 * epsilonr #permittivity
 
 def linear_system(mesh: object, V: np.array) -> np.array:
@@ -43,4 +43,5 @@ def pot_surf(mesh: object,V0: np.array) -> np.array:
 
 def potential(mesh: object, q: np.array, pts: np.array) -> np.array:
     V=mat_func(pts,mesh.vertex,mesh.topol,q)
+    V=V/4*pi*epsilon
     return V
