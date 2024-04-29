@@ -34,6 +34,13 @@ if __name__ == '__main__':
     C = h * sum(q[:N]) / V0
     print('Capacitance (SI):', C)
 
+    C_teo = np.pi*epsilon/np.arccosh(np.linalg.norm(c1)/r1) #Only works if c1=c2 and r1=r2
+    print('Theoretical Capacitance (SI):', C_teo)
+    E = abs(C-C_teo)
+    r = E/C_teo
+    print('Absolute Error (SI):', E)
+    print('Relative Error:', r)
+
     #represent the potential
     # Generate x and y values
     x = np.linspace(-2, 2, 100)
