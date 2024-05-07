@@ -1,6 +1,7 @@
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
+import pyvista as pv
 
 def hiper(radius: float, center: np.array,num_points: int,circum:int):
     index=radius
@@ -33,16 +34,24 @@ def lateral(radius: float, center: np.array,num_points: int,altura:float, circum
         index=index-dist
     return points
     
-points=hiper(10.0,np.array([0,0,0]),1000,20)
+points=hiper(10.0,np.array([0,0,0]),3000,50)
 x, y, z = zip(*points)
 fig = plt.figure()
 ax = plt.axes(projection ='3d')
 ax.plot3D(x, y, z, 'green')
 plt.show()
+cloud = pv.PolyData(points)
+surf = cloud.delaunay_2d()
+surf.plot(show_edges=True)
+surf.plot(cpos="yz", show_edges=True)
 
-points=lateral(20.0,np.array([0,0,0]),7000,10,20)
+points=lateral(20.0,np.array([0,0,0]),10000,10,10)
 x, y, z = zip(*points)
 fig = plt.figure()
 ax = plt.axes(projection ='3d')
 ax.plot3D(x, y, z, 'green')
 plt.show()
+cloud = pv.PolyData(points)
+surf = cloud.delaunay_2d()
+surf.plot(show_edges=True)
+surf.plot(cpos="yz", show_edges=True)
