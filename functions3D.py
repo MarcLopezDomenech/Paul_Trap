@@ -76,7 +76,7 @@ def plot_mesh(obj, title):
         ax.plot([obj.vertex[t[2]][0], obj.vertex[t[0]][0]], [obj.vertex[t[2]][1], obj.vertex[t[0]][1]], [obj.vertex[t[2]][2], obj.vertex[t[0]][2]], '-')
 
     ax.scatter3D(obj.bari[:, 0], obj.bari[:, 1], obj.bari[:, 2], color="black")
-
+    plt.axis('equal')
     plt.title(title)
     # show plot
     plt.show()
@@ -94,10 +94,12 @@ def concatenate_meshes(obj1, obj2):
     bari = np.zeros((len(obj1.bari) + len(obj2.bari), 3))
     bari[:len(obj1.bari), :] = obj1.bari
     bari[len(obj1.bari):, :] = obj2.bari
-
-    ntriang = np.zeros(2, dtype=int)
-    ntriang[0] = obj1.ntriang[0]
-    ntriang[1] = obj2.ntriang[0]
+    ntriang = []
+    for x in obj1.ntriang:
+        ntriang.append(x)
+    for x in obj2.ntriang:
+        ntriang.append(x)
+    ntriang = np.array(ntriang)
 
     res = obj(vertex, topol, bari, ntriang)
 
