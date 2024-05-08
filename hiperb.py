@@ -16,6 +16,24 @@ def two_sheets_hyperboloid(ulim):
     z = np.cosh(u)
     return x, y, z
 
+def hiper(radius: float, center: np.array,num_points: int,circum:int):
+    index=radius
+    dist =float(radius) / float(circum)
+    points=[]
+    num = 0
+    for i in range(circum):
+        num=num+2*m.pi*(i+1)*dist
+    dens=float(num_points/num)
+    while index > 0:
+        numero=int(dens*2*m.pi*index)
+        for j in range(numero):
+             x=index*m.cos(float(2*m.pi*j)/float(numero))
+             y=index*m.sin(float(2*m.pi*j)/float(numero))
+             z=m.sqrt(m.pow(x,2)+m.pow(y,2) +1)
+             points.append(center+np.array([x,y,z]))
+        index=index-dist
+    return points
+
 def lateral(radius: float, center: np.array,num_points: int,altura:float, circum:int):
     dist =float(altura) / float(circum)
     index=altura/2
@@ -58,10 +76,13 @@ def lateral1(center: np.array,num_points: int,altura:float, circum:int):
         index=index+dist
     return points
 
-X, Y, Z = two_sheets_hyperboloid(3)
-points = np.c_[X.reshape(-1), Y.reshape(-1), Z.reshape(-1)]
+points=hiper(10.0,np.array([0,0,0]),5000,100)
+X, Y, Z = zip(*points)
+ax = plt.axes(projection ='3d')
+ax.scatter(X, Y, Z, 'green')
+plt.show()
+
 cloud = pv.PolyData(points)
-cloud.plot(point_size=7)
 surf = cloud.delaunay_2d()
 surf.plot(show_edges=True)
 
