@@ -60,14 +60,10 @@ def lateral1(center: np.array,num_points: int,altura:float, circum:int):
 
 X, Y, Z = two_sheets_hyperboloid(3)
 points = np.c_[X.reshape(-1), Y.reshape(-1), Z.reshape(-1)]
-fig = plt.figure()
-ax = plt.axes(projection ='3d')
-ax.plot3D(x, y, z, 'green')
-plt.show()
 cloud = pv.PolyData(points)
+cloud.plot(point_size=7)
 surf = cloud.delaunay_2d()
 surf.plot(show_edges=True)
-surf.plot(cpos="yz", show_edges=True)
 
 points=lateral1(np.array([0,0,0]),1000,5,20)
 x, y, z = zip(*points)
