@@ -70,7 +70,7 @@ def two_sheets_hyperboloid(radius: float, center: np.array,num_points: int,circu
     for t in topol:
         bari.append(1/3*(np.array(surf.points[t[0]])+np.array(surf.points[t[1]])+np.array(surf.points[t[2]])))
     bari = np.array(bari)
-    ntriang = np.array([len(surf.faces)])
+    ntriang = np.array([len(topol)])
 
     object2 = obj(surf.points, topol, bari, ntriang)
     return object2
@@ -114,19 +114,19 @@ def two_sheets_hyperboloid2(radius: float, center: np.array,num_points: int,circ
     for t in topol:
         bari.append(1/3*(np.array(surf.points[t[0]])+np.array(surf.points[t[1]])+np.array(surf.points[t[2]])))
     bari = np.array(bari)
-    ntriang = np.array([len(surf.faces)])
+    ntriang = np.array([len(topol)])
 
     object2 = obj(surf.points, topol, bari, ntriang)
     return object2
 
 object1 = one_sheet_hyperboloid(0.4, 1, 5, 0.25)
-plot_mesh(object1, 'One-sheet hyperboloid')
+#plot_mesh(object1, 'One-sheet hyperboloid')
 
 object2 = two_sheets_hyperboloid(7.0, np.array([0, 0, 0]), 200, 10, 0.25)
 #plot_mesh(object2, 'Two-sheets hyperboloid')
 
 object3 = two_sheets_hyperboloid2(7.0, np.array([0, 0, 0]), 200, 10, 0.25)
-plot_mesh(object3, 'Two-sheets hyperboloid') 
+#plot_mesh(object3, 'Two-sheets hyperboloid') 
 
 object = concatenate_meshes(object1, object2)
 object = concatenate_meshes(object, object3)
