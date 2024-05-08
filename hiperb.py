@@ -30,13 +30,41 @@ def lateral(radius: float, center: np.array,num_points: int,altura:float, circum
         num=num+2*m.pi*radius*m.cosh(m.dist([radius,0,(i+1)*dist-altura/2], [0,0,0])-radius)
     dens=float(num_points/num)
     while index > -altura/2:
-        rad=radius*m.cosh(m.dist([radius,0,index], [0,0,0])-radius)
+        rad=radius*(m.cosh(m.dist([radius,0,index], [0,0,0])-radius)-0.8999)
         numero=int(dens*2*m.pi*abs(rad))
         for j in range(numero):
-            points.append(center+np.array([rad*m.cos(float(2*m.pi*j)/float(numero)),rad*m.sin(float(2*m.pi*j)/float(numero)),index]))
+            x=rad*m.cos(float(2*m.pi*j)/float(numero))
+            y=rad*m.sin(float(2*m.pi*j)/float(numero))
+            z=m.sqrt(m.pow(x,2)+m.pow(y,2) -1)
+            if index<0:
+                z=-z
+            points.append(center+np.array([x,y,z]))
         index=index-dist
     return points
-    
+
+def lateral1(center: np.array,num_points: int,altura:float, circum:int):
+    dist =float(altura) / float(circum)
+    index=altura/2
+    points=[]
+    num = 0
+    for i in range(circum):
+        alt=i*dist-(altura/2)
+        rad=m.sqrt(m.pow(alt,2) +1)
+        num=num+2*m.pi*rad
+    dens=float(num_points/num)
+    while index > -altura/2:
+        rad=m.sqrt(m.pow(index,2) +1)
+        numero=int(dens*2*m.pi*abs(rad))
+        for j in range(numero):
+            x=rad*m.cos(float(2*m.pi*j)/float(numero))
+            y=rad*m.sin(float(2*m.pi*j)/float(numero))
+            z=index
+            if index<0:
+                z=-z
+            points.append(center+np.array([x,y,z]))
+        index=index-dist
+    return points
+
 points=hiper(10.0,np.array([0,0,0]),1000,100)
 x, y, z = zip(*points)
 fig = plt.figure()
@@ -48,7 +76,7 @@ surf = cloud.delaunay_2d()
 surf.plot(show_edges=True)
 surf.plot(cpos="yz", show_edges=True)
 
-points=lateral(20.0,np.array([0,0,0]),10000,10,20)
+points=lateral1(np.array([0,0,0]),1000,10,100)
 x, y, z = zip(*points)
 fig = plt.figure()
 ax = plt.axes(projection ='3d')
@@ -58,3 +86,4 @@ cloud = pv.PolyData(points)
 surf = cloud.delaunay_2d()
 surf.plot(show_edges=True)
 surf.plot(cpos="yz", show_edges=True)
+surf.plot(cpos="xy", show_edges=True)
