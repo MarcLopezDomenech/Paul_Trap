@@ -2,7 +2,6 @@ import numpy as np
 from electrodes_geometry import object
 from functions3D import pot_surf, linear_system, potential2
 from mayavi import mlab
-import sys
 import time
 
 V0 = 1
@@ -52,3 +51,22 @@ coneplot = mlab.quiver3d(Xd, Yd, Zd, Ex, Ey, Ez, colormap='coolwarm', mode='cone
 mlab.title('Potential')
 axes = mlab.axes()
 mlab.show()
+
+#Matlab's contourslice
+#'''
+#Mayavi's and Matlab's meshgrids are different, that is why I have to
+#recalculate everything
+X,Y,Z = np.meshgrid(x,y,z)
+V= potential2(object, q, X, Y, Z)
+[Ex, Ey, Ez] = np.gradient(-V)
+import matlab.engine
+eng = matlab.engine.start_matlab()
+eng.contourslice(X, Y, Z, V, np.linspace(-5, 5, 10), np.array([]), np.array([]))
+eng.view(3)
+#eng.eval('grid on', nargout=0)
+eng.eval('colormap jet', nargout=0)
+eng.eval('colorbar', nargout=0)
+# Pause the script
+input("Press Enter to exit Matlab plot...")
+eng.exit()
+#'''
