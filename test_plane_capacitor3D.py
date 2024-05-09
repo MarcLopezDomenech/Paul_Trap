@@ -1,5 +1,6 @@
 from functions3D import *
 from mayavi import mlab
+import sys
 
 if __name__ == '__main__':
     '''
@@ -28,7 +29,6 @@ if __name__ == '__main__':
 
     obj = concatenate_meshes(obj1, obj2) #merge geoemtries of both planes into one object
     plot_mesh(obj, 'Both planes')
-
     V0 = 1 #potential difference between plates
     Vs = np.array([V0, 0])
     V = pot_surf(obj, Vs)
@@ -84,3 +84,22 @@ if __name__ == '__main__':
     mlab.title('Potential')
     axes = mlab.axes()
     mlab.show()
+
+    #Matlab's contourslice
+    '''
+    #Mayavi's and Matlab's meshgrids are different, that is why I have to
+    #recalculate everything
+    X,Y,Z = np.meshgrid(x,y,z)
+    V= potential2(obj, q, X, Y, Z)
+    [Ex, Ey, Ez] = np.gradient(-V)
+    import matlab.engine
+    eng = matlab.engine.start_matlab()
+    eng.contourslice(X, Y, Z, V, np.linspace(-d, 2*d, 10), np.array([]), np.array([]))
+    eng.view(3)
+    #eng.eval('grid on', nargout=0)
+    eng.eval('colormap jet', nargout=0)
+    eng.eval('colorbar', nargout=0)
+    # Pause the script
+    input("Press Enter to exit Matlab plot...")
+    eng.exit()
+    '''
