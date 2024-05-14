@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator as rgi
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 def trajectory(interpEx, interpEy, interpEz, tot_time:float, dt:float, init_pos:np.array, init_vel:np.array, charges:np.array, mases:np.array, xmin:float, xmax:float, ymin:float, ymax:float, zmin:float, zmax:float):
     '''
@@ -57,7 +58,8 @@ def force_ions(positions: np.array, charges: np.array):
     return force
 
 
-dt = 10e-3
+dt = 1e-4
+tot_time = 0.1
 num_ions=2
 x0 = np.array([[-0.1,0.0,0.0],[0.1,0.0,0.0]]) #This should be an array of 3D arrays
 v0 = np.array([[0,0,0],[0,0,0]])
@@ -75,8 +77,31 @@ interpEx = rgi((x, y, z), Ex)
 interpEy = rgi((x, y, z), Ey)
 interpEz = rgi((x, y, z), Ez)
 points = np.array([[0,0,0], [1,1,1]])
-Traj = trajectory(interpEx, interpEy, interpEz,1,dt,x0,v0,charg,m,-6,6,-6,6,-4,4)
-print(Traj)
+Traj = trajectory(interpEx, interpEy, interpEz,tot_time,dt,x0,v0,charg,m,-6,6,-6,6,-4,4)
+#print(Traj)
+
+#pixar animation studios
+frames = len(Traj)
+sim_time = 30*1e3 #miliseconds
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+particles = ax.scatter(Traj[0,:,0], Traj[0,:,1], Traj[0,:,2], c=np.array(['blue', 'red']))
+def update(frame):
+    # for each frame, update the data stored on each artist.
+
+    # update the scatter plot:
+    particles._offsets3d = (Traj[frame, :, 0], Traj[frame, :, 1], Traj[frame, :, 2])
+    plt.draw()
+    return particles
+
+def init():
+    ax.set_xlim(-6, 6)
+    ax.set_ylim(-6, 6)
+    ax.set_zlim(-4, 4)
+    return particles
+
+ani = animation.FuncAnimation(fig=fig, func=update, frames=frames, interval=sim_time/frames, init_func=init, blit=False, repeat=False)
+plt.show()
 
 
 #Plot the trajectory
