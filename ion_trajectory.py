@@ -83,6 +83,7 @@ print(Traj)
 ax = plt.figure().add_subplot(projection='3d')
 for i in range(len(Traj[0])):
     ax.plot(Traj[:,i,0], Traj[:,i,1], Traj[:,i,2], label='Ion ' + str(i) + ' Trajectory')
+    ax.scatter(Traj[0,i,0], Traj[0,i,1], Traj[0,i,2], label='initial position '+str(i))
 ax.legend()
 plt.show()
 
