@@ -49,17 +49,20 @@ def trajectory_freq(freq:float,interpEx, interpEy, interpEz, tot_time:float, dt:
     return Traj
 
 def force_ions(positions: np.array, charges: np.array):
-    k=9e9
-    force=np.zeros((len(positions), 3))
-    for j in range(len(positions)):
-        for i in range(len(positions)):
-            if i!=j:
-                v_dist=np.subtract(positions[j],positions[i])
-                mod=np.linalg.norm(v_dist)
-                dist_3=mod**3
-                scalar=(k*charges[j]*charges[i]/dist_3)
-                force[j]=force[j]+scalar*v_dist
-    return force
+    if (len(positions)==1):
+        return 0
+    else:
+        k=9e9
+        force=np.zeros((len(positions), 3))
+        for j in range(len(positions)):
+            for i in range(len(positions)):
+                if i!=j:
+                    v_dist=np.subtract(positions[j],positions[i])
+                    mod=np.linalg.norm(v_dist)
+                    dist_3=mod**3
+                    scalar=(k*charges[j]*charges[i]/dist_3)
+                    force[j]=force[j]+scalar*v_dist
+        return force
 
 
 dt = 5e-5
