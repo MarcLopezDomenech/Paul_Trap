@@ -24,6 +24,8 @@ def trajectory_freq(freq:float,interpEx, interpEy, interpEz, tot_time:float, dt:
     position=init_pos
     t=0
     Traj=[position]
+    mean_vel=velocity
+    ite = 0
     while t<tot_time:
         E_pos=np.array([interpEx(position), interpEy(position), interpEz(position)])
         E_pos = E_pos * np.cos(2 * np.pi * freq * t)
@@ -38,6 +40,8 @@ def trajectory_freq(freq:float,interpEx, interpEy, interpEz, tot_time:float, dt:
 
         t=t+dt
         Traj = np.vstack ((Traj, [position]))
+        mean_vel = mean_vel + velocity
+        ite = ite + 1
 
         '''potser no cal fer la seguent comprovacio, si la funcio dona error perque
         una particula se'n surt disminuim tot_time'''
@@ -45,7 +49,8 @@ def trajectory_freq(freq:float,interpEx, interpEy, interpEz, tot_time:float, dt:
             if pos[0] <= xmin or pos[0] >= xmax or pos[1] <= ymin or pos[1] >= ymax or pos[2] <= zmin or pos[2] >= zmax:
                 print('ValueError: One of the requested xi is out of bounds')
                 return Traj
-
+    mean_vel = mean_vel/ite
+    #print(mean_vel)
     return Traj
 
 def force_ions(positions: np.array, charges: np.array):
@@ -66,7 +71,7 @@ def force_ions(positions: np.array, charges: np.array):
 
 
 dt = 5e-5
-tot_time = 1
+tot_time = 2
 num_ions=4
 #x0 = np.array([[0.5,0.5,0.0],[0.5,-0.5,0.0], [-0.5,0.5,0.0],[-0.5,-0.5,0.0]])
 #v0 = np.array([[0.5,0.5,0],[0.5,-0.5,0],[-0.5,0.5,0],[-0.5,-0.5,0]])
