@@ -1,10 +1,7 @@
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator as rgi
 import matplotlib.pyplot as plt
-import matplotlib
-import matplotlib.animation as animation
 import time
-import sys
 
 def trajectory_freq(freq:float,interpEx, interpEy, interpEz, tot_time:float, dt:float, init_pos:np.array, init_vel:np.array, charges:np.array, mases:np.array, xmin:float, xmax:float, ymin:float, ymax:float, zmin:float, zmax:float):
     '''
@@ -78,8 +75,6 @@ num_ions=2
 #v0 = np.array([[0.5,0.5,0],[0.5,-0.5,0],[-0.5,0.5,0],[-0.5,-0.5,0]])
 
 #Generar posicions i velocitats inicials random
-x0 = np.random.uniform(-0.5,0.5,(num_ions,3))
-v0 = np.random.uniform(-0.5,0.5,(num_ions,3))
 #De moment, crec que millor condicions inicials simetriques
 charg=np.ones(num_ions)*1.6e-19 #ion charge
 m=np.ones(num_ions)*2.87347958e-25 #ytterbium ion mass
@@ -90,22 +85,45 @@ z = np.linspace(-1, 1, 101)
 x = np.linspace(-1, 1, 101)
 dx = 2/100
 Y, X, Z = np.meshgrid(y, x, z)
-V = np.load('V2.npy') #canviar potencial
-Ex, Ey, Ez=np.gradient(-V, dx, dx, dx)
-interpEx = rgi((x, y, z), Ex)
-interpEy = rgi((x, y, z), Ey)
-interpEz = rgi((x, y, z), Ez)
-freq = 1e4 #canviar frequencia
-dt = 1/(freq*20)
-tot_time = 2.5 #estava agafant 0.2s/V0
-start = time.time()
-Traj, trapped = trajectory_freq(freq,interpEx, interpEy, interpEz,tot_time,dt,x0,v0,charg,m,-1,1,-1,1,-1,1)
-print('Calculations took', time.time()-start, 's')
-print('Ion trapped:', trapped)
-#Plot the trajectory
-ax = plt.figure().add_subplot(projection='3d')
-for i in range(len(Traj[0])):
-    ax.plot(Traj[:,i,0], Traj[:,i,1], Traj[:,i,2], label='Ion ' + str(i) + ' Trajectory')
-    ax.scatter(Traj[0,i,0], Traj[0,i,1], Traj[0,i,2], label='initial position '+str(i))
-ax.legend()
+V = np.load('V2.npy')
+vlogpot = np.linspace(0.5, 3, 50)
+vlogfreq = np.linspace(3, 4, 50)
+vlogfreq1 = []
+vlogpot1 = []
+vlogfreq2 = []
+vlogpot2 = []
+for logvi in vlogpot:
+    for logfreq in vlogfreq:
+        freq = 10**logfreq
+        vi = 10**logvi
+        tot_time = 2e-4 * freq / vi
+        dt = 1/(freq*20)
+        V0 = V*vi
+        Ex, Ey, Ez=np.gradient(-V0, dx, dx, dx)
+        interpEx = rgi((x, y, z), Ex)
+        interpEy = rgi((x, y, z), Ey)
+        interpEz = rgi((x, y, z), Ez)
+        x0 = np.random.uniform(-0.5,0.5,(num_ions,3))
+        v0 = np.random.uniform(-100,100,(num_ions,3))
+        print('V = %f, freq = %f:' %(vi, freq))
+        start = time.time()
+        Traj, trapped = trajectory_freq(freq,interpEx, interpEy, interpEz,tot_time,dt,x0,v0,charg,m,-1,1,-1,1,-1,1)
+        print('Calculation took', time.time()-start, 's')
+        print('Ions trapped:', trapped)
+        print()
+        if trapped:
+            vlogfreq1.append(logfreq)
+            vlogpot1.append(logvi)
+        else:
+            vlogfreq2.append(logfreq)
+            vlogpot2.append(logvi)
+
+fig = plt.figure()
+plt.plot(vlogfreq1, vlogpot1, 'o', color = 'green')
+plt.plot(vlogfreq2, vlogpot2, 'o', color = 'red')
 plt.show()
+
+np.save('vlogfreq1', vlogfreq1)
+np.save('vlogfreq2', vlogfreq2)
+np.save('vlogpot1', vlogpot1)
+np.save('vlogpot2', vlogpot2)
