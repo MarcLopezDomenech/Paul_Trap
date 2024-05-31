@@ -180,15 +180,15 @@ if __name__ == '__main__':
     plt.plot(np.log(N_all), np.log(r_all), '.--', label='Error relatiu')
     #plt.legend()
     #plt.title('Error relatiu en funció del nombre de punts N (escala logarítmica)')
-    plt.xlabel(Number of points N)
-    plt.ylabel(Relative error (logarithmic scale))
+    plt.xlabel('Number of points N')
+    plt.ylabel('Relative error (logarithmic scale)')
     plt.show()
 
     #plt.plot(N_all, QE_all, '.--', label='Quocient errors absoluts')
     plt.plot(N_all, Qr_all, '.--', label='Quocient errors relatius')
     #plt.legend()
     plt.title('Quotient of error for N points with error for 2N punts')
-    plt.xlabel(Number of points N)
+    plt.xlabel('Number of points N')
     plt.show()
         
 
