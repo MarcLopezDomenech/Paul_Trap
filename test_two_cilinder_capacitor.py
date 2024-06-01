@@ -187,7 +187,7 @@ if __name__ == '__main__':
     #plt.plot(N_all, QE_all, '.--', label='Quocient errors absoluts')
     plt.plot(N_all, Qr_all, '.--', label='Quocient errors relatius')
     #plt.legend()
-    plt.title('Quotient of error for N points with error for 2N punts')
+    plt.title('Quotient of error for N points with error for 2N points')
     plt.xlabel('Number of points N')
     plt.show()
         
